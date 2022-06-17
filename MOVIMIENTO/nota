@@ -1,0 +1,33 @@
+function moverZana(zanahoria) {        
+    var posY = 0;        
+    var posicion = "derecha";
+    var intervalo;
+    var tecla = "";    
+    var teclaPulsada = false; 
+    var limite = window.innerHeight - zanahoria.height;                
+    intervalo = setInterval(function() {
+        posY += velocidadZana;
+        zanahoria.style.top = posY + "px";
+        if (posY > limite) {
+            posY = 0;
+            zanahoria.style.top = posY + "px";
+        } 
+        
+        //inicio de ferificacion si la dona toco a homero
+        if (zanahoria.offsetTop + zanahoria.height > recoje.offsetTop && zanahoria.offsetTop < recoje.offsetTop + zanahoria.height && zanahoria.offsetLeft + recoje.width > recoje.offsetLeft && zanahoria.offsetLeft < recoje.offsetLeft + recoje.width) {
+            document.body.removeChild(zanahoria);
+            puntaje--;
+            if(puntaje == 0){                                
+                alert("==PERDISTE== ");                      
+                clearInterval(intervalo);    
+                alert("gracias por jugar ");
+                alert("vuelve a intentarlo");             
+                //si lo toca y se juntan 20 tocadas gana    
+            }else{//de lo contrario siguen cayendo donas
+                lluvia();
+                clearInterval(intervalo);
+            }                
+        }
+        
+    }, 90);                
+}

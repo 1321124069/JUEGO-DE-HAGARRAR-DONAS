@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego recoje</title>
+</head>
+<!--fondo del juego-->
+<body style="background-image: url('https://i.blogs.es/7997eb/los-simpsons-wes-anderson/840_560.jpeg'); background-size: cover; background-repeat: no-repeat;">
+    <!-- posicionar en pie de pagina-->            
+    <div style="bottom: 0; width: 100%;">
+        <!--gif de homero caminando-->        
+            <img id="recoje" src="https://i.pinimg.com/originals/d8/55/9f/d8559f57d2cfcc8db35f032b424f1fe8.gif" style="top: 19%; left: 0; width: 20%; height: 20%; position: fixed; z-index: 1; margin-top: 30%;">
+    </div>
+</body>
+
+<script>
+
+//declaracion de variables
+    var tecla = "";    
+    var teclaPulsada = false; 
+    var anchoPantalla= window.innerWidth;
+    var alturaPantalla = window.innerHeight;
+    var puntaje = 0;
+    var objetivoGanar = 10;
+    var recoje = document.getElementById("recoje");
+    var posX = 0;
+    var posY = 0;
+    var velocidad = 80;
+    var velocidadDona = 10;
+    var velocidadZana = 10;
+    var posicion = "derecha";
+    var intervalo;
+    var objetivoPerder = 3;
+
+    generaDonas();
+
+    //verifica si las teclas oprimidas son las correctas para que homero se mueva
+    document.onkeydown = function(tlc) {        
+        tecla = tlc.keyCode;
+        teclaPulsada = true;
+        // -- si es flecha derecha
+        if (tecla == 39) {
+            // -- mover personaje a la derecha
+            recoje.style.transform = "scaleX(1)";
+            posicion = "derecha";
+            // --- Flecha Izquierda
+        }else if (tecla == 37) {
+            // -- voltear personaje
+            recoje.style.transform = "scaleX(-1)";
+            posicion = "izquierda";
+        }else{
+            return false;
+        }
+        moverPersonaje();
+    }
+
+    //cae la dona en un numero aleatorio de la pantalla 
+    function caeDona() {
+        var posX = Math.floor(Math.random() * (anchoPantalla - 700));
+        var dona = document.createElement("img");
+        dona.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRldkBLhM-sCD_2MHneHf0QFnDtJL9GRYMPyA&usqp=CAU";
+        dona.style.position = "absolute";
+        dona.style.width = "80px";
+        dona.style.height = "80px";
+        dona.style.left = posX + "px";
+        document.body.appendChild(dona);
+        moverObjeto(dona);
+    }
+
+      //cae la dona en un numero aleatorio de la pantalla 
+      function caeZanahoria() {
+        var posX = Math.floor(Math.random() * (anchoPantalla - 700));
+        var zanahoria = document.createElement("img");
+        zanahoria.src = "data:image/jpeg;base64,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";
+        zanahoria.style.position = "absolute";
+        zanahoria.style.width = "80px";
+        zanahoria.style.height = "80px";
+        zanahoria.style.left = posX + "px";
+        document.body.appendChild(zanahoria);
+        moverZana(zanahoria);
+    }
+
+    //da movimiento a homero
+    function moverPersonaje() {
+
+        if (posicion == "derecha") {
+            posX += velocidad;
+        } else {
+            posX -= velocidad;
+        }
+        recoje.style.left = posX + "px";
+        limitePantalla();
+    }
+
+    //checa los limites de la pantalla para no salirse
+    function limitePantalla() {
+        if (posX > window.innerWidth - recoje.width) {
+            posX = window.innerWidth - recoje.width;
+        } else if (posX < 0) {
+            posX = 0;
+        }
+    }
+
+
+    //hace la lluvia de donas
+    function generaDonas() {
+        
+        intervalo = setInterval(function() {
+            objetivoGanar--;
+            if(objetivoGanar >= 0){
+                caeDona();
+            }else{
+                clearInterval(intervalo);
+            }
+        }, 1000);        
+              
+    }
+
+
+    function moverObjeto(dona) {        
+        var posY = 0;        
+        var posicion = "derecha";
+        var intervalo;
+        var tecla = "";    
+        var teclaPulsada = false; 
+        var limite = window.innerHeight - dona.height;                
+        intervalo = setInterval(function() {
+            posY += velocidadDona;
+            dona.style.top = posY + "px";
+            if (posY > limite) {
+                posY = 0;
+                dona.style.top = posY + "px";
+            } 
+            
+            //inicio de ferificacion si la dona toco a homero
+            if (dona.offsetTop + dona.height > recoje.offsetTop && dona.offsetTop < recoje.offsetTop + dona.height && dona.offsetLeft + recoje.width > recoje.offsetLeft && dona.offsetLeft < recoje.offsetLeft + recoje.width) {
+                document.body.removeChild(dona);
+                puntaje++;
+                if(puntaje == 10){                                
+                    alert("has ganado ");                      
+                    clearInterval(intervalo);    
+                    alert("hagarraste " + puntaje);
+                    alert("gracias por jugar");             
+                    //si lo toca y se juntan 20 tocadas gana    
+                }else{//de lo contrario siguen cayendo donas
+                    lluvia();
+                    clearInterval(intervalo);
+                }                
+            }
+            
+        }, 90);                
+    }
+
+   
+
+
+</script>
+</html>
